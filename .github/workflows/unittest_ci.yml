@@ -14,9 +14,9 @@ jobs:
     strategy:
       matrix:
         os: [linux.g5.12xlarge.nvidia.gpu]
-        python-version: ['3.11']
-        python-tag: ["py311"]
-        cuda-tag: ["cu118"]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+        python-tag: ["py39", "py310", "py311", "py312"]
+        cuda-tag: ["cu118", "cu121"]
     uses: pytorch/test-infra/.github/workflows/linux_job.yml@main
     with:
       runner: ${{ matrix.os }}

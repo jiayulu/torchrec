@@ -12,42 +12,41 @@ on:
 jobs:
   build_test:
     strategy:
+      fail-fast: false
       matrix:
-        os: [linux.g5.12xlarge.nvidia.gpu]
-        matrix:
-          include:
-            - os: linux.g5.12xlarge.nvidia.gpu
-              python-version: 3.9
-              python-tag: "py39"
-              cuda-tag: "cu118"
-            - os: linux.g5.12xlarge.nvidia.gpu
-              python-version: 3.9
-              python-tag: "py39"
-              cuda-tag: "cu121"
-            - os: linux.g5.12xlarge.nvidia.gpu
-              python-version: '3.10'
-              python-tag: "py310"
-              cuda-tag: "cu118"
-            - os: linux.g5.12xlarge.nvidia.gpu
-              python-version: '3.10'
-              python-tag: "py310"
-              cuda-tag: "cu121"
-            - os: linux.g5.12xlarge.nvidia.gpu
-              python-version: '3.11'
-              python-tag: "py311"
-              cuda-tag: "cu118"
-            - os: linux.g5.12xlarge.nvidia.gpu
-              python-version: '3.11'
-              python-tag: "py311"
-              cuda-tag: "cu121"
-            - os: linux.g5.12xlarge.nvidia.gpu
-              python-version: '3.12'
-              python-tag: "py312"
-              cuda-tag: "cu118"
-            - os: linux.g5.12xlarge.nvidia.gpu
-              python-version: '3.12'
-              python-tag: "py312"
-              cuda-tag: "cu121"
+        include:
+          - os: linux.g5.12xlarge.nvidia.gpu
+            python-version: 3.9
+            python-tag: "py39"
+            cuda-tag: "cu118"
+          - os: linux.g5.12xlarge.nvidia.gpu
+            python-version: 3.9
+            python-tag: "py39"
+            cuda-tag: "cu121"
+          - os: linux.g5.12xlarge.nvidia.gpu
+            python-version: '3.10'
+            python-tag: "py310"
+            cuda-tag: "cu118"
+          - os: linux.g5.12xlarge.nvidia.gpu
+            python-version: '3.10'
+            python-tag: "py310"
+            cuda-tag: "cu121"
+          - os: linux.g5.12xlarge.nvidia.gpu
+            python-version: '3.11'
+            python-tag: "py311"
+            cuda-tag: "cu118"
+          - os: linux.g5.12xlarge.nvidia.gpu
+            python-version: '3.11'
+            python-tag: "py311"
+            cuda-tag: "cu121"
+          - os: linux.g5.12xlarge.nvidia.gpu
+            python-version: '3.12'
+            python-tag: "py312"
+            cuda-tag: "cu118"
+          - os: linux.g5.12xlarge.nvidia.gpu
+            python-version: '3.12'
+            python-tag: "py312"
+            cuda-tag: "cu121"
     uses: pytorch/test-infra/.github/workflows/linux_job.yml@main
     with:
       runner: ${{ matrix.os }}

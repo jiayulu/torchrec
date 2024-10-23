@@ -40,40 +40,33 @@ else
     export CUDA_VERSION="cpu"
 fi
 
-if [[ ${MATRIX_CHANNEL} = 'pypi_release' ]]; then
-    echo "checking pypi release"
-    pip install torch
-    pip install fbgemm-gpu
-    pip install torchrec
-else
-    # figure out URL
-    if [[ ${MATRIX_CHANNEL} = 'nightly' ]]; then
-        export PYTORCH_URL="https://download.pytorch.org/whl/nightly/${CUDA_VERSION}"
-    elif [[ ${MATRIX_CHANNEL} = 'test' ]]; then
-        export PYTORCH_URL="https://download.pytorch.org/whl/test/${CUDA_VERSION}"
-    elif [[ ${MATRIX_CHANNEL} = 'release' ]]; then
-        export PYTORCH_URL="https://download.pytorch.org/whl/${CUDA_VERSION}"
-    fi
-
-    # install pytorch
-    # switch back to conda once torch nightly is fixed
-    # if [[ ${MATRIX_GPU_ARCH_TYPE} = 'cuda' ]]; then
-    #     export PYTORCH_CUDA_PKG="pytorch-cuda=${MATRIX_GPU_ARCH_VERSION}"
-    # fi
-    conda run -n build_binary pip install torch --index-url "$PYTORCH_URL"
-
-    # install fbgemm
-    conda run -n build_binary pip install fbgemm-gpu --index-url "$PYTORCH_URL"
-
-    # install requirements from pypi
-    conda run -n build_binary pip install torchmetrics==1.0.3
-
-    # install torchrec
-    conda run -n build_binary pip install torchrec --index-url "$PYTORCH_URL"
-
-    # Run small import test
-    conda run -n build_binary python -c "import torch; import fbgemm_gpu; import torchrec"
+# figure out URL
+if [[ ${MATRIX_CHANNEL} = 'nightly' ]]; then
+    export PYTORCH_URL="https://download.pytorch.org/whl/nightly/${CUDA_VERSION}"
+elif [[ ${MATRIX_CHANNEL} = 'test' ]]; then
+    export PYTORCH_URL="https://download.pytorch.org/whl/test/${CUDA_VERSION}"
+elif [[ ${MATRIX_CHANNEL} = 'release' ]]; then
+    export PYTORCH_URL="https://download.pytorch.org/whl/${CUDA_VERSION}"
 fi
+
+# install pytorch
+# switch back to conda once torch nightly is fixed
+# if [[ ${MATRIX_GPU_ARCH_TYPE} = 'cuda' ]]; then
+#     export PYTORCH_CUDA_PKG="pytorch-cuda=${MATRIX_GPU_ARCH_VERSION}"
+# fi
+conda run -n build_binary pip install torch --index-url "$PYTORCH_URL"
+
+# install fbgemm
+conda run -n build_binary pip install fbgemm-gpu --index-url "$PYTORCH_URL"
+
+# install requirements from pypi
+conda run -n build_binary pip install torchmetrics==1.0.3
+
+# install torchrec
+conda run -n build_binary pip install torchrec --index-url "$PYTORCH_URL"
+
+# Run small import test
+conda run -n build_binary python -c "import torch; import fbgemm_gpu; import torchrec"
 
 # check directory
 ls -R
@@ -100,8 +93,8 @@ if [[ ${MATRIX_CHANNEL} != 'release' ]]; then
     exit 0
 else
     # Check version matches only for release binaries
-    torchrec_version=$(pip show torchrec | grep Version | cut -d' ' -f2)
-    fbgemm_version=$(pip show fbgemm_gpu | grep Version | cut -d' ' -f2)
+    torchrec_version=$(conda run -n build_binary pip show torchrec | grep Version | cut -d' ' -f2)
+    fbgemm_version=$(conda run -n build_binary pip show fbgemm_gpu | grep Version | cut -d' ' -f2)
 
     if [ "$torchrec_version" != "$fbgemm_version" ]; then
         echo "Error: TorchRec package version does not match FBGEMM package version"
@@ -123,8 +116,8 @@ conda run -n build_binary pip install fbgemm-gpu
 conda run -n build_binary pip install torchrec
 
 # Check version matching again for PyPI
-torchrec_version=$(pip show torchrec | grep Version | cut -d' ' -f2)
-fbgemm_version=$(pip show fbgemm_gpu | grep Version | cut -d' ' -f2)
+torchrec_version=$(conda run -n build_binary pip show torchrec | grep Version | cut -d' ' -f2)
+fbgemm_version=$(conda run -n build_binary pip show fbgemm_gpu | grep Version | cut -d' ' -f2)
 
 if [ "$torchrec_version" != "$fbgemm_version" ]; then
     echo "Error: TorchRec package version does not match FBGEMM package version"

@@ -98,13 +98,22 @@ fi
 
 if [[ ${MATRIX_CHANNEL} != 'release' ]]; then
     exit 0
+else
+    # Check version matches only for release binaries
+    torchrec_version=$(pip show torchrec | grep Version | cut -d' ' -f2)
+    fbgemm_version=$(pip show fbgemm_gpu | grep Version | cut -d' ' -f2)
+
+    if [ "$torchrec_version" != "$fbgemm_version" ]; then
+        echo "Error: TorchRec package version does not match FBGEMM package version"
+        exit 1
+    fi
 fi
 
 conda create -y -n build_binary python="${MATRIX_PYTHON_VERSION}"
 
 conda run -n build_binary python --version
 
-if [[ ${MATRIX_GPU_ARCH_VERSION} != '12.1' ]]; then
+if [[ ${MATRIX_GPU_ARCH_VERSION} != '12.4' ]]; then
     exit 0
 fi
 
@@ -112,6 +121,15 @@ echo "checking pypi release"
 conda run -n build_binary pip install torch
 conda run -n build_binary pip install fbgemm-gpu
 conda run -n build_binary pip install torchrec
+
+# Check version matching again for PyPI
+torchrec_version=$(pip show torchrec | grep Version | cut -d' ' -f2)
+fbgemm_version=$(pip show fbgemm_gpu | grep Version | cut -d' ' -f2)
+
+if [ "$torchrec_version" != "$fbgemm_version" ]; then
+    echo "Error: TorchRec package version does not match FBGEMM package version"
+    exit 1
+fi
 
 # check directory
 ls -R
